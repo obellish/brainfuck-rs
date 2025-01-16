@@ -56,9 +56,9 @@ version = "0.1.0"
 
 [profile.release]
 codegen-units = 1
+debug = true
 lto = "fat"
 panic = "abort"
-strip = "symbols"
 
 [workspace.metadata.docs.rs]
 all-features = true

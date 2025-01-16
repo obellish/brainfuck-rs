@@ -1,4 +1,6 @@
-build.rustdocflags = ["--cfg", "docsrs", "--show-type-layout", "-Z", "unstable-options"]
+[build]
+rustflags = ["-C", "symbol-mangling-version=v0"]
+rustdocflags = ["--cfg", "docsrs", "--show-type-layout", "-Z", "unstable-options"]
 
 [alias]
 coverage = "tarpaulin"

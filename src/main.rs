@@ -1,4 +1,4 @@
-use std::{fs, io::empty, path::PathBuf};
+use std::{fs, path::PathBuf};
 
 use anyhow::Result;
 use brainfuck_rs::Interpreter;
@@ -16,7 +16,7 @@ pub fn main() -> Result<()> {
 
 	let raw_data = fs::read_to_string(&args.input_path)?;
 
-	let mut interpreter = Interpreter::new(empty(), empty());
+	let mut interpreter = Interpreter::default();
 
 	*interpreter.program_mut() = raw_data.parse()?;
 

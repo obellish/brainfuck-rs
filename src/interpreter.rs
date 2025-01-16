@@ -8,7 +8,7 @@ use thiserror::Error;
 
 use super::{Cell, Instruction, Program, Tape};
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Clone)]
 pub struct Interpreter<R: Read = Stdin, W: Write = Stdout> {
 	program: Program,
 	memory: Tape,
@@ -149,6 +149,12 @@ impl<R: Read, W: Write> Interpreter<R, W> {
 		self.output.flush()?;
 
 		Ok(())
+	}
+}
+
+impl Default for Interpreter {
+	fn default() -> Self {
+		Self::new(stdin(), stdout())
 	}
 }
 
