@@ -22,6 +22,7 @@ cognitive_complexity = "allow"
 disallowed_methods = "deny"
 float_cmp = "allow"
 fn_params_excessive_bools = "allow"
+large_stack_arrays = "allow"
 missing_errors_doc = "allow"
 missing_panics_doc = "allow"
 missing_safety_doc = "allow"
@@ -50,7 +51,7 @@ useless_conversion = "allow"
 [workspace.package]
 edition = "2021"
 license = "MIT or Apache-2.0"
-rust-version = "1.75"         # Due to returning `impl Trait` in traits.
+rust-version = "1.83"         # Due to returning `impl Trait` in traits.
 version = "0.1.0"
 
 [profile.release]
@@ -61,3 +62,8 @@ strip = "symbols"
 
 [workspace.metadata.docs.rs]
 all-features = true
+
+[dependencies]
+anyhow = "1.0.95"
+clap = { version = "4", features = ["derive"] }
+thiserror = "2.0.11"
