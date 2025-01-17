@@ -6,7 +6,7 @@ use std::{
 
 use thiserror::Error;
 
-use super::{Cell, Instruction, Program, Tape};
+use super::{Instruction, Program, Tape};
 
 #[derive(Debug, Clone)]
 pub struct Interpreter<R: Read = StdinLock<'static>, W: Write = StdoutLock<'static>> {
@@ -55,7 +55,7 @@ impl<R: Read, W: Write> Interpreter<R, W> {
 				Instruction::Read => self.get_char()?,
 				Instruction::Write => self.put_char()?,
 				Instruction::JumpLeft => {
-					if !matches!(self.current_cell().value(), 0) {
+					if !matches!(self.current_cell(), 0) {
 						let mut deep = 1;
 						loop {
 							if matches!(self.counter, 0) {
@@ -77,7 +77,7 @@ impl<R: Read, W: Write> Interpreter<R, W> {
 					}
 				}
 				Instruction::JumpRight => {
-					if matches!(self.current_cell().value(), 0) {
+					if matches!(self.current_cell(), 0) {
 						let mut deep = 1;
 
 						loop {
@@ -119,12 +119,12 @@ impl<R: Read, W: Write> Interpreter<R, W> {
 	}
 
 	#[inline]
-	pub fn current_cell(&self) -> &Cell {
+	pub fn current_cell(&self) -> &u8 {
 		self.memory.current_cell()
 	}
 
 	#[inline]
-	pub fn current_cell_mut(&mut self) -> &mut Cell {
+	pub fn current_cell_mut(&mut self) -> &mut u8 {
 		self.memory.current_cell_mut()
 	}
 
@@ -137,13 +137,13 @@ impl<R: Read, W: Write> Interpreter<R, W> {
 			}
 		}
 
-		self.current_cell_mut().set_value(buf[0]);
+		*self.current_cell_mut() = buf[0];
 
 		Ok(())
 	}
 
 	fn put_char(&mut self) -> Result<(), RuntimeError> {
-		let ch = self.current_cell().value();
+		let ch = *self.current_cell();
 
 		if ch.is_ascii() {
 			self.output.write_all(&[ch])?;

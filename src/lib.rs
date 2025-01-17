@@ -9,5 +9,5 @@ pub use self::{
 	interpreter::Interpreter,
 	optimizer::Optimizer,
 	program::{Instruction, Program},
-	tape::{Cell, Tape},
+	tape::Tape,
 };
