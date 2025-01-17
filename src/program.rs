@@ -84,8 +84,8 @@ impl FromStr for Program {
 				b'-' => Instruction::Decrement(1),
 				b'.' => Instruction::Write,
 				b',' => Instruction::Read,
-				b'>' => Instruction::MoveRight(1),
-				b'<' => Instruction::MoveLeft(1),
+				b'>' => Instruction::Move(1),
+				b'<' => Instruction::Move(-1),
 				b'[' => Instruction::JumpRight,
 				b']' => Instruction::JumpLeft,
 				_ => continue,
@@ -100,8 +100,7 @@ impl FromStr for Program {
 
 #[derive(Debug, Clone, Copy)]
 pub enum Instruction {
-	MoveRight(usize),
-	MoveLeft(usize),
+	Move(isize),
 	Increment(u8),
 	Decrement(u8),
 	Write,

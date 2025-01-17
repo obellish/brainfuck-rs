@@ -48,10 +48,15 @@ impl<R: Read, W: Write> Interpreter<R, W> {
 	pub fn run(&mut self) -> Result<(), RuntimeError> {
 		'program: loop {
 			match *self.current_instruction() {
-				Instruction::Increment(i) => self.memory += i,
-				Instruction::Decrement(i) => self.memory -= i,
-				Instruction::MoveLeft(i) => self.memory <<= i,
-				Instruction::MoveRight(i) => self.memory >>= i,
+				Instruction::Increment(i) => *self.memory_mut() += i,
+				Instruction::Decrement(i) => *self.memory_mut() -= i,
+				Instruction::Move(i) => {
+					if i < 0 {
+						*self.memory_mut() <<= i.unsigned_abs();
+					} else {
+						*self.memory_mut() >>= i.unsigned_abs();
+					}
+				}
 				Instruction::Read => self.get_char()?,
 				Instruction::Write => self.put_char()?,
 				Instruction::JumpLeft => {
