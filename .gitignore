@@ -4,3 +4,4 @@ perf.data*
 dhat.out*
 /blah
 cachegrind.out*
+massif.out*

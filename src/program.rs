@@ -77,7 +77,7 @@ impl FromStr for Program {
 	type Err = Infallible;
 
 	fn from_str(s: &str) -> Result<Self, Self::Err> {
-		let mut ops = Vec::new();
+		let mut ops = Vec::with_capacity(s.len());
 		for b in s.bytes() {
 			let inst = match b {
 				b'+' => Instruction::Increment(1),
