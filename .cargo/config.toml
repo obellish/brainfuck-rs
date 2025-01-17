@@ -1,5 +1,5 @@
 [build]
-rustflags = ["-C", "symbol-mangling-version=v0"]
+rustflags = ["-C", "symbol-mangling-version=v0", "-C", "target-cpu=native"]
 rustdocflags = ["--cfg", "docsrs", "--show-type-layout", "-Z", "unstable-options"]
 
 [alias]

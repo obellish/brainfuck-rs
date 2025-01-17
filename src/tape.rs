@@ -5,7 +5,7 @@ use std::{
 
 const TAPE_SIZE: usize = 1000;
 
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct Tape {
 	cells: [Cell; TAPE_SIZE],
 	pointer: usize,
@@ -20,17 +20,20 @@ impl Tape {
 		Self { cells, pointer: 0 }
 	}
 
+	#[inline]
 	#[must_use]
-	pub const fn current_cell(&self) -> &Cell {
-		&self.cells[self.pointer]
+	pub fn current_cell(&self) -> &Cell {
+		unsafe { self.cells.get_unchecked(self.pointer) }
 	}
 
+	#[inline]
 	pub fn current_cell_mut(&mut self) -> &mut Cell {
-		&mut self.cells[self.pointer]
+		unsafe { self.cells.get_unchecked_mut(self.pointer) }
 	}
 }
 
 impl AddAssign<u8> for Tape {
+	#[inline]
 	fn add_assign(&mut self, rhs: u8) {
 		self.current_cell_mut().add_assign(rhs);
 	}
@@ -57,6 +60,7 @@ impl Debug for Tape {
 }
 
 impl Default for Tape {
+	#[inline]
 	fn default() -> Self {
 		Self::new()
 	}
@@ -65,7 +69,16 @@ impl Default for Tape {
 impl Shl<usize> for Tape {
 	type Output = Self;
 
+	#[inline]
 	fn shl(mut self, rhs: usize) -> Self::Output {
+		self.shl_assign(rhs);
+		self
+	}
+}
+
+impl ShlAssign<usize> for Tape {
+	#[inline]
+	fn shl_assign(&mut self, rhs: usize) {
 		for _ in 0..rhs {
 			self.pointer = if matches!(self.pointer, 0) {
 				TAPE_SIZE - 1
@@ -75,21 +88,22 @@ impl Shl<usize> for Tape {
 
 			self.current_cell_mut().touch();
 		}
-
-		self
-	}
-}
-
-impl ShlAssign<usize> for Tape {
-	fn shl_assign(&mut self, rhs: usize) {
-		*self = *self << rhs;
 	}
 }
 
 impl Shr<usize> for Tape {
 	type Output = Self;
 
+	#[inline]
 	fn shr(mut self, rhs: usize) -> Self::Output {
+		self.shr_assign(rhs);
+		self
+	}
+}
+
+impl ShrAssign<usize> for Tape {
+	#[inline]
+	fn shr_assign(&mut self, rhs: usize) {
 		for _ in 0..rhs {
 			self.pointer = if self.pointer == TAPE_SIZE - 1 {
 				0
@@ -99,18 +113,11 @@ impl Shr<usize> for Tape {
 
 			self.current_cell_mut().touch();
 		}
-
-		self
-	}
-}
-
-impl ShrAssign<usize> for Tape {
-	fn shr_assign(&mut self, rhs: usize) {
-		*self = *self >> rhs;
 	}
 }
 
 impl SubAssign<u8> for Tape {
+	#[inline]
 	fn sub_assign(&mut self, rhs: u8) {
 		self.current_cell_mut().sub_assign(rhs);
 	}
@@ -124,12 +131,14 @@ pub enum Cell {
 }
 
 impl Cell {
+	#[inline]
 	pub fn touch(&mut self) {
 		if matches!(self, Self::Untouched) {
 			*self = Self::Value(0);
 		}
 	}
 
+	#[inline]
 	#[must_use]
 	pub const fn value(self) -> u8 {
 		match self {
@@ -138,6 +147,7 @@ impl Cell {
 		}
 	}
 
+	#[inline]
 	pub fn set_value(&mut self, value: u8) {
 		*self = Self::Value(value);
 	}
@@ -146,6 +156,7 @@ impl Cell {
 impl Add<u8> for Cell {
 	type Output = Self;
 
+	#[inline]
 	fn add(self, rhs: u8) -> Self::Output {
 		match self {
 			Self::Untouched => Self::Value(rhs),
@@ -155,6 +166,7 @@ impl Add<u8> for Cell {
 }
 
 impl AddAssign<u8> for Cell {
+	#[inline]
 	fn add_assign(&mut self, rhs: u8) {
 		*self = *self + rhs;
 	}
@@ -178,6 +190,7 @@ impl Display for Cell {
 impl Sub<u8> for Cell {
 	type Output = Self;
 
+	#[inline]
 	fn sub(self, rhs: u8) -> Self::Output {
 		match self {
 			Self::Untouched => Self::Value(rhs),
@@ -187,6 +200,7 @@ impl Sub<u8> for Cell {
 }
 
 impl SubAssign<u8> for Cell {
+	#[inline]
 	fn sub_assign(&mut self, rhs: u8) {
 		*self = *self - rhs;
 	}

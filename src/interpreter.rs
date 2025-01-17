@@ -44,6 +44,7 @@ impl<R: Read, W: Write> Interpreter<R, W> {
 		&mut self.memory
 	}
 
+	#[allow(unreachable_patterns)]
 	pub fn run(&mut self) -> Result<(), RuntimeError> {
 		'program: loop {
 			match *self.current_instruction() {
@@ -99,6 +100,7 @@ impl<R: Read, W: Write> Interpreter<R, W> {
 						}
 					}
 				}
+				ref i => todo!("instruction not implemented: {i:?}"),
 			}
 
 			self.counter += 1;
@@ -111,14 +113,17 @@ impl<R: Read, W: Write> Interpreter<R, W> {
 		Ok(())
 	}
 
+	#[inline]
 	pub fn current_instruction(&self) -> &Instruction {
-		&self.program()[self.counter]
+		unsafe { self.program().get_unchecked(self.counter) }
 	}
 
-	pub const fn current_cell(&self) -> &Cell {
+	#[inline]
+	pub fn current_cell(&self) -> &Cell {
 		self.memory.current_cell()
 	}
 
+	#[inline]
 	pub fn current_cell_mut(&mut self) -> &mut Cell {
 		self.memory.current_cell_mut()
 	}

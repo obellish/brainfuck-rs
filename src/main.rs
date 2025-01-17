@@ -1,7 +1,13 @@
-use std::{fs, path::PathBuf};
+#![allow(unused)]
+
+use std::{
+	fs,
+	io::{empty, stdout, Cursor},
+	path::PathBuf,
+};
 
 use anyhow::Result;
-use brainfuck_rs::Interpreter;
+use brainfuck_rs::{Interpreter, Optimizer, Program};
 use clap::Parser;
 
 #[allow(unused)]
@@ -16,9 +22,15 @@ pub fn main() -> Result<()> {
 
 	let raw_data = fs::read_to_string(&args.input_path)?;
 
-	let mut interpreter = Interpreter::default();
+	let program = raw_data.parse::<Program>()?;
 
-	*interpreter.program_mut() = raw_data.parse()?;
+	let mut optimizer = Optimizer::new(program);
+
+	let input = b"179424691\n";
+
+	let mut interpreter = Interpreter::new(Cursor::new(input), stdout());
+
+	*interpreter.program_mut() = optimizer.optimize();
 
 	println!("{:?}", interpreter.memory());
 
