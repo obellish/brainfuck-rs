@@ -80,11 +80,12 @@ impl ShlAssign<usize> for Tape {
 	#[inline]
 	fn shl_assign(&mut self, rhs: usize) {
 		for _ in 0..rhs {
-			self.pointer = if matches!(self.pointer, 0) {
-				TAPE_SIZE - 1
-			} else {
-				self.pointer - 1
-			};
+			// self.pointer = if matches!(self.pointer, 0) {
+			// 	TAPE_SIZE - 1
+			// } else {
+			// 	self.pointer - 1
+			// };
+			self.pointer = (self.pointer + TAPE_SIZE - 1) % TAPE_SIZE;
 
 			self.current_cell_mut().touch();
 		}
@@ -105,12 +106,7 @@ impl ShrAssign<usize> for Tape {
 	#[inline]
 	fn shr_assign(&mut self, rhs: usize) {
 		for _ in 0..rhs {
-			self.pointer = if self.pointer == TAPE_SIZE - 1 {
-				0
-			} else {
-				self.pointer + 1
-			};
-
+			self.pointer = (self.pointer + 1) % TAPE_SIZE;
 			self.current_cell_mut().touch();
 		}
 	}

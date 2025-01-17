@@ -1,6 +1,6 @@
 use std::{
 	convert::Infallible,
-	io::{stdin, stdout, Error as IoError, ErrorKind, Read, Stdin, Stdout, Write},
+	io::{stdin, stdout, Error as IoError, ErrorKind, Read, StdinLock, StdoutLock, Write},
 	str::FromStr,
 };
 
@@ -9,7 +9,7 @@ use thiserror::Error;
 use super::{Cell, Instruction, Program, Tape};
 
 #[derive(Debug, Clone)]
-pub struct Interpreter<R: Read = Stdin, W: Write = Stdout> {
+pub struct Interpreter<R: Read = StdinLock<'static>, W: Write = StdoutLock<'static>> {
 	program: Program,
 	memory: Tape,
 	counter: usize,
@@ -159,7 +159,7 @@ impl<R: Read, W: Write> Interpreter<R, W> {
 
 impl Default for Interpreter {
 	fn default() -> Self {
-		Self::new(stdin(), stdout())
+		Self::new(stdin().lock(), stdout().lock())
 	}
 }
 
@@ -173,8 +173,8 @@ impl FromStr for Interpreter {
 			program,
 			memory: Tape::new(),
 			counter: 0,
-			input: stdin(),
-			output: stdout(),
+			input: stdin().lock(),
+			output: stdout().lock(),
 		})
 	}
 }

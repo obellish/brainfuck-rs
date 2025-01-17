@@ -37,11 +37,8 @@ pub fn main() -> Result<()> {
 	let mut interpreter = Interpreter::new(Cursor::new(input), stdout.lock());
 
 	*interpreter.program_mut() = optimizer.optimize();
-	println!("{:?}", interpreter.program());
 
 	interpreter.run();
-
-	println!("{:?}", interpreter.memory());
 
 	Ok(())
 }
