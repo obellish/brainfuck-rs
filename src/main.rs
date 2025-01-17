@@ -8,9 +8,9 @@ use std::{
 	path::PathBuf,
 };
 
-use anyhow::Result;
 use brainfuck_rs::{Interpreter, Optimizer, Program};
 use clap::Parser;
+use eyre::Result;
 
 use self::args::Args;
 
