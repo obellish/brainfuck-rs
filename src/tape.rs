@@ -5,7 +5,7 @@ use std::{
 
 const TAPE_SIZE: usize = 1000;
 
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct Tape {
 	cells: [u8; TAPE_SIZE],
 	pointer: usize,
@@ -73,29 +73,20 @@ impl Shl<usize> for Tape {
 	type Output = Self;
 
 	#[inline]
-	fn shl(self, rhs: usize) -> Self::Output {
-		// Self {
-		// 	pointer: self.pointer + (TAPE_SIZE - (rhs % TAPE_SIZE)) % TAPE_SIZE,
-		// 	cells: self.cells,
-		// }
-
-		let pointer = if self.pointer.wrapping_sub(rhs) >= TAPE_SIZE {
-			TAPE_SIZE - rhs
-		} else {
-			self.pointer - rhs
-		};
-
-		Self {
-			pointer,
-			cells: self.cells,
-		}
+	fn shl(mut self, rhs: usize) -> Self::Output {
+		self.shl_assign(rhs);
+		self
 	}
 }
 
 impl ShlAssign<usize> for Tape {
 	#[inline]
 	fn shl_assign(&mut self, rhs: usize) {
-		*self = *self << rhs;
+		self.pointer = if self.pointer.wrapping_sub(rhs) >= TAPE_SIZE {
+			TAPE_SIZE - rhs
+		} else {
+			self.pointer - rhs
+		};
 	}
 }
 
@@ -104,36 +95,26 @@ impl Shr<usize> for Tape {
 	type Output = Self;
 
 	#[inline]
-	fn shr(self, rhs: usize) -> Self::Output {
-		// Self {
-		// 	pointer: (self.pointer + (rhs % TAPE_SIZE)) % TAPE_SIZE,
-		// 	cells: self.cells,
-		// }
-
-		let mut pointer = self.pointer + rhs;
-
-		if pointer >= TAPE_SIZE {
-			pointer -= TAPE_SIZE;
-		}
-
-		Self {
-			cells: self.cells,
-			pointer,
-		}
+	fn shr(mut self, rhs: usize) -> Self::Output {
+		self.shr_assign(rhs);
+		self
 	}
 }
 
 impl ShrAssign<usize> for Tape {
 	#[inline]
 	fn shr_assign(&mut self, rhs: usize) {
-		*self = *self >> rhs;
+		self.pointer += rhs;
+
+		if self.pointer >= TAPE_SIZE {
+			self.pointer -= TAPE_SIZE;
+		}
 	}
 }
 
 impl SubAssign<u8> for Tape {
 	#[inline]
 	fn sub_assign(&mut self, rhs: u8) {
-		// self.current_cell_mut().sub_assign(rhs);
 		*self.current_cell_mut() = self.current_cell().wrapping_sub(rhs);
 	}
 }
