@@ -37,7 +37,7 @@ impl Optimizer {
 			if self.verbose {
 				eprintln!("Optimization iteration {iteration}: none applied, finished with {} instructions", self.program.len());
 			}
-			self.program
+			self.program.into_optimized()
 		}
 	}
 
@@ -69,11 +69,11 @@ where
 		let mut progress = false;
 
 		while program.len() >= P::SIZE && i < program.len() - (P::SIZE - 1) {
-			let window = &program.as_slice()[i..(P::SIZE + i)];
+			let window = &program[i..(P::SIZE + i)];
 
 			let change = P::run_pass(self, window);
 
-			let (changed, removed) = change.apply(program, i, P::SIZE);
+			let (changed, removed) = change.apply(program.as_raw(), i, P::SIZE);
 			i -= removed;
 
 			if changed {

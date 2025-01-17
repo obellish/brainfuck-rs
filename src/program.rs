@@ -5,16 +5,39 @@ use std::{
 	str::FromStr,
 };
 
-#[derive(Default, Clone)]
-#[repr(transparent)]
-pub struct Program {
-	ops: Vec<Instruction>,
+#[derive(Clone)]
+pub enum Program {
+	Raw(Vec<Instruction>),
+	Optimized(Box<[Instruction]>),
 }
 
 impl Program {
 	#[must_use]
 	pub const fn new() -> Self {
-		Self { ops: Vec::new() }
+		Self::Raw(Vec::new())
+	}
+
+	pub fn as_raw(&mut self) -> &mut Vec<Instruction> {
+		match self {
+			Self::Raw(ops) => ops,
+			Self::Optimized(ops) => {
+				*self = Self::Raw(ops.to_vec());
+
+				match self {
+					Self::Raw(ops) => ops,
+					Self::Optimized(_) => unreachable!(),
+				}
+			}
+		}
+	}
+
+	#[must_use]
+	pub fn into_optimized(self) -> Self {
+		if let Self::Raw(v) = self {
+			Self::Optimized(v.into_boxed_slice())
+		} else {
+			self
+		}
 	}
 }
 
@@ -24,17 +47,29 @@ impl Debug for Program {
 	}
 }
 
+impl Default for Program {
+	fn default() -> Self {
+		Self::new()
+	}
+}
+
 impl Deref for Program {
-	type Target = Vec<Instruction>;
+	type Target = [Instruction];
 
 	fn deref(&self) -> &Self::Target {
-		&self.ops
+		match self {
+			Self::Raw(ops) => ops,
+			Self::Optimized(ops) => ops,
+		}
 	}
 }
 
 impl DerefMut for Program {
 	fn deref_mut(&mut self) -> &mut Self::Target {
-		&mut self.ops
+		match self {
+			Self::Raw(ops) => ops,
+			Self::Optimized(ops) => ops,
+		}
 	}
 }
 
@@ -59,7 +94,7 @@ impl FromStr for Program {
 			ops.push(inst);
 		}
 
-		Ok(Self { ops })
+		Ok(Self::Raw(ops))
 	}
 }
 

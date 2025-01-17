@@ -24,6 +24,8 @@ pub fn main() -> Result<()> {
 		}
 	};
 
+	let stdout = std::io::stdout();
+
 	let raw_data = fs::read_to_string(&args.input_path)?;
 
 	let program = raw_data.parse::<Program>()?;
@@ -32,10 +34,9 @@ pub fn main() -> Result<()> {
 
 	let input = b"179424691\n";
 
-	let mut interpreter = Interpreter::new(Cursor::new(input), stdout());
+	let mut interpreter = Interpreter::new(Cursor::new(input), stdout.lock());
 
 	*interpreter.program_mut() = optimizer.optimize();
-
 	println!("{:?}", interpreter.program());
 
 	interpreter.run();
