@@ -14,9 +14,6 @@ pub struct Tape {
 impl Tape {
 	#[must_use]
 	pub const fn new() -> Self {
-		// let cells = [0; TAPE_SIZE];
-
-		// Self { cells, pointer: 0 }
 		Self {
 			cells: [0; TAPE_SIZE],
 			pointer: 0,
