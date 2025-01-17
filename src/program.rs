@@ -45,12 +45,12 @@ impl FromStr for Program {
 		let mut ops = Vec::new();
 		for b in s.bytes() {
 			let inst = match b {
-				b'+' => Instruction::Increment,
-				b'-' => Instruction::Decrement,
+				b'+' => Instruction::Increment(1),
+				b'-' => Instruction::Decrement(1),
 				b'.' => Instruction::Write,
 				b',' => Instruction::Read,
-				b'>' => Instruction::MoveRight,
-				b'<' => Instruction::MoveLeft,
+				b'>' => Instruction::MoveRight(1),
+				b'<' => Instruction::MoveLeft(1),
 				b'[' => Instruction::JumpRight,
 				b']' => Instruction::JumpLeft,
 				_ => continue,
@@ -63,12 +63,12 @@ impl FromStr for Program {
 	}
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub enum Instruction {
-	MoveRight,
-	MoveLeft,
-	Increment,
-	Decrement,
+	MoveRight(usize),
+	MoveLeft(usize),
+	Increment(u8),
+	Decrement(u8),
 	Write,
 	Read,
 	JumpRight,

@@ -1,5 +1,7 @@
 #![allow(unused)]
 
+mod args;
+
 use std::{
 	fs,
 	io::{empty, stdout, Cursor},
@@ -9,6 +11,8 @@ use std::{
 use anyhow::Result;
 use brainfuck_rs::{Interpreter, Optimizer, Program};
 use clap::Parser;
+
+use self::args::Args;
 
 #[allow(unused)]
 pub fn main() -> Result<()> {
@@ -24,7 +28,7 @@ pub fn main() -> Result<()> {
 
 	let program = raw_data.parse::<Program>()?;
 
-	let mut optimizer = Optimizer::new(program);
+	let mut optimizer = Optimizer::new(program, args.verbose);
 
 	let input = b"179424691\n";
 
@@ -32,17 +36,11 @@ pub fn main() -> Result<()> {
 
 	*interpreter.program_mut() = optimizer.optimize();
 
-	println!("{:?}", interpreter.memory());
+	println!("{:?}", interpreter.program());
 
 	interpreter.run();
 
 	println!("{:?}", interpreter.memory());
 
 	Ok(())
-}
-
-#[derive(Debug, Parser)]
-#[command(version, about, long_about = "None")]
-struct Args {
-	pub input_path: PathBuf,
 }

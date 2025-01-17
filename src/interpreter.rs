@@ -44,14 +44,14 @@ impl<R: Read, W: Write> Interpreter<R, W> {
 		&mut self.memory
 	}
 
-	#[allow(unreachable_patterns)]
+	#[allow(unreachable_patterns, clippy::todo)]
 	pub fn run(&mut self) -> Result<(), RuntimeError> {
 		'program: loop {
 			match *self.current_instruction() {
-				Instruction::Increment => self.memory += 1,
-				Instruction::Decrement => self.memory -= 1,
-				Instruction::MoveLeft => self.memory <<= 1,
-				Instruction::MoveRight => self.memory >>= 1,
+				Instruction::Increment(i) => self.memory += i,
+				Instruction::Decrement(i) => self.memory -= i,
+				Instruction::MoveLeft(i) => self.memory <<= i,
+				Instruction::MoveRight(i) => self.memory >>= i,
 				Instruction::Read => self.get_char()?,
 				Instruction::Write => self.put_char()?,
 				Instruction::JumpLeft => {
