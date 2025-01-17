@@ -6,7 +6,7 @@ mod utils;
 
 pub(crate) use self::utils::*;
 pub use self::{
-	interpreter::Interpreter,
+	interpreter::{Interpreter, RuntimeError},
 	optimizer::Optimizer,
 	program::{Instruction, Program},
 	tape::Tape,

@@ -37,6 +37,11 @@ impl PeepholePass for CombineInstPass {
 				Ordering::Greater => Change::Replace(vec![Instruction::MoveRight(i1 - i2)]),
 				Ordering::Less => Change::Replace(vec![Instruction::MoveLeft(i2 - i1)]),
 			},
+			(Instruction::MoveLeft(i1), Instruction::MoveRight(i2)) => match i1.cmp(&i2) {
+				Ordering::Equal => Change::Remove,
+				Ordering::Greater => Change::Replace(vec![Instruction::MoveLeft(i1 - i2)]),
+				Ordering::Less => Change::Replace(vec![Instruction::MoveRight(i2 - i1)]),
+			},
 			_ => Change::Ignore,
 		}
 	}
