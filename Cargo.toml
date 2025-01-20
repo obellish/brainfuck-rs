@@ -9,7 +9,6 @@ version.workspace = true
 
 [workspace]
 resolver = "2"
-members = ["crates/prefetch-testing"]
 
 [workspace.lints.rust]
 elided_lifetimes_in_paths = "warn"
@@ -68,3 +67,6 @@ all-features = true
 clap = { version = "4", features = ["derive"] }
 eyre = "0.6"
 thiserror = "2.0.11"
+
+[features]
+profiler = []

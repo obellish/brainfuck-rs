@@ -80,8 +80,8 @@ impl FromStr for Program {
 		let mut ops = Vec::with_capacity(s.len());
 		for b in s.bytes() {
 			let inst = match b {
-				b'+' => Instruction::Increment(1),
-				b'-' => Instruction::Decrement(1),
+				b'+' => Instruction::Add(1),
+				b'-' => Instruction::Add(-1),
 				b'.' => Instruction::Write,
 				b',' => Instruction::Read,
 				b'>' => Instruction::Move(1),
@@ -101,8 +101,7 @@ impl FromStr for Program {
 #[derive(Debug, Clone, Copy)]
 pub enum Instruction {
 	Move(isize),
-	Increment(u8),
-	Decrement(u8),
+	Add(i8),
 	Write,
 	Read,
 	JumpRight,

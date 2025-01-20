@@ -7,6 +7,8 @@ use std::{
 use thiserror::Error;
 
 use super::{Instruction, Program, Tape};
+#[cfg(feature = "profiler")]
+use crate::Profiler;
 
 #[derive(Debug, Clone)]
 pub struct Interpreter<R: Read = StdinLock<'static>, W: Write = StdoutLock<'static>> {
@@ -15,6 +17,8 @@ pub struct Interpreter<R: Read = StdinLock<'static>, W: Write = StdoutLock<'stat
 	counter: usize,
 	input: R,
 	output: W,
+	#[cfg(feature = "profiler")]
+	profiler: Profiler,
 }
 
 impl<R: Read, W: Write> Interpreter<R, W> {
@@ -25,6 +29,8 @@ impl<R: Read, W: Write> Interpreter<R, W> {
 			counter: 0,
 			input,
 			output,
+			#[cfg(feature = "profiler")]
+			profiler: Profiler::new(),
 		}
 	}
 
@@ -47,9 +53,20 @@ impl<R: Read, W: Write> Interpreter<R, W> {
 	#[allow(unreachable_patterns, clippy::todo)]
 	pub fn run(&mut self) -> Result<(), RuntimeError> {
 		'program: loop {
+			#[cfg(feature = "profiler")]
+			{
+				match self.current_instruction() {
+					Instruction::Add(_) => *self.profiler.add_mut() += 1,
+					Instruction::Move(_) => *self.profiler.mov_mut() += 1,
+					Instruction::JumpLeft => *self.profiler.jl_mut() += 1,
+					Instruction::JumpRight => *self.profiler.jr_mut() += 1,
+					Instruction::Read => *self.profiler.inp_mut() += 1,
+					Instruction::Write => *self.profiler.out_mut() += 1,
+				}
+			}
+
 			match *self.current_instruction() {
-				Instruction::Increment(i) => *self.memory_mut() += i,
-				Instruction::Decrement(i) => *self.memory_mut() -= i,
+				Instruction::Add(i) => *self.memory_mut() += i as u8,
 				Instruction::Move(i) => {
 					if i < 0 {
 						*self.memory_mut() <<= i.unsigned_abs();
@@ -180,6 +197,8 @@ impl FromStr for Interpreter {
 			counter: 0,
 			input: stdin().lock(),
 			output: stdout().lock(),
+			#[cfg(feature = "profiler")]
+			profiler: Profiler::new(),
 		})
 	}
 }
